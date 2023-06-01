@@ -14,8 +14,10 @@ class DatasetBuilder():
         newDataFrame.to_csv(destName, index=False, header=True, encoding='utf-8')
     
 if __name__ == '__main__':
-    dsb = DatasetBuilder('tsla_2019_2022.csv', 'tslaReduced.csv',' [UNDERLYING_LAST]', ' [EXPIRE_DATE]',
-       ' [EXPIRE_UNIX]', ' [DTE]', ' [C_DELTA]')
+    dsb = DatasetBuilder('tsla_2019_2022.csv', 'tslaReduced.csv',' [QUOTE_DATE]',' [UNDERLYING_LAST]', ' [EXPIRE_DATE]',
+       ' [DTE]', ' [C_LAST]',
+        ' [C_BID]', ' [C_ASK]', ' [STRIKE]', ' [P_BID]',
+       ' [P_ASK]', ' [P_LAST]',)
         
 '''
 headers in kaggle tsla_2019_2022.csv. have to add single quotes like 'col' or usually ' col'

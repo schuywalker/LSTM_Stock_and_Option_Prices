@@ -14,15 +14,14 @@ class OptionPlayTranslator():
         self.predictions = predictions
 
     def findPlays(self, date, predictionDate):
-        chain = self.chains.get_group(date)
-        print('\n COLUMNS!! \n',chain.columns)
-        # print(type(chain), ' is chain type\n')
-        # print('chain.head() ',chain.head())
+        startingChain = self.chains.get_group(date)
+        print('\n COLUMNS!! \n',startingChain.columns)
         nearest_expiry = self.getNearestExpirationWeek(date, predictionDate)
         print('nearest_expiry ', nearest_expiry)
-        # pred_chain.columns = pred_chain.columns.str.strip()
-        pred_chain:pd.DataFrame = chain.loc[chain['[EXPIRE_DATE]'] == nearest_expiry]
-        print(pred_chain.head())
+        endingChain = self.chains.get_group(nearest_expiry)
+        
+        pred_chain:pd.DataFrame = endingChain.loc[endingChain['[EXPIRE_DATE]'] == nearest_expiry]
+        print('\nPRED_CHAIN\n',pred_chain)
         
         # df_expiration_dates = chain.groupby('[EXPIRE_DATE]')
         # exp_week_chain = df_expiration_dates.get_group(nearest_expiry)
@@ -42,17 +41,12 @@ class OptionPlayTranslator():
 
         #### monday = 0, sunday = 6, friday = 4 ####
         
-        if ((fut - cur).days < 5 ):
-            # same week, increment to friday
-            while  fut.weekday() != 4:
-                fut += timedelta(1)
-        else:
-            # get first friday before predicted date
-            while fut.weekday() != 4:
-                fut -= timedelta(1)
-
-        # print('cur is ', cur, ', cur weekday', cur.weekday())
-        # print('fut is ', fut, ', weekday ', fut.weekday())
-
+        #TODO: check fut is < last date in datasets (save final dates in memory)
+       
+        while  fut.weekday() != 4:
+            fut += timedelta(1)
+        
         assert(fut > cur)
-        return fut.strftime('%Y-%m-%d')
+        ret = ' '+fut.strftime('%Y-%m-%d')
+        print('ret ', ret)
+        return ret
