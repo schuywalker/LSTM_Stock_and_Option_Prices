@@ -13,5 +13,8 @@ if __name__ == '__main__':
     print('\ndayGroups first \n', dayGroups.first())
 
 
-    OPT = OptionPlayTranslator('AAPL', dayGroups)
-    OPT.findPlays(' 2019-10-01', ' 2022-10-25')
+    opt = OPT('TSLA', dayGroups)
+    opt.find_plays(' 2019-10-01', ' 2020-01-16','200')
+
+
+    # rewrite as get_week_chain, takes date and expiration week

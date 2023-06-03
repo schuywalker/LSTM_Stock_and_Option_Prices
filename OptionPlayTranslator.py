@@ -1,52 +1,36 @@
 import pandas as pd
-import datetime
-from datetime import date, timedelta
 import numpy as np
+from utils.options_utils import *
 
-class OptionPlayTranslator():
+class OPT:
 
-    def __init__(self, ticker, chains:pd.core.groupby.generic.DataFrameGroupBy, predictions=None) -> None:
+    def __init__(self, ticker, dataset:pd.core.groupby.generic.DataFrameGroupBy, pred_date:str = None, predictions=None):
         self.ticker = ticker
-        self.chains = chains # change to not hold in memory
         self.predictions = predictions
-    
-    def setPredictions(self, predictions) -> None:
-        self.predictions = predictions
+        self.dataset = dataset # comes in as groupby right now
+        pred_date = pred_date 
+        self.fut_friday:str  = None
+        self.pred_week:pd.DataFrame = None # contracts expiring immediately after prediction date
+        self.chain_on_fut_friday:pd.DataFrame = None
+        self.pred_week_on_fut_friday:pd.DataFrame = None
 
-    def findPlays(self, date, predictionDate):
-        startingChain = self.chains.get_group(date)
-        print('\n COLUMNS!! \n',startingChain.columns)
-        nearest_expiry = self.getNearestExpirationWeek(date, predictionDate)
-        print('nearest_expiry ', nearest_expiry)
-        endingChain = self.chains.get_group(nearest_expiry)
+    def find_plays(self, date, pred_date, pred_price):
+        # add space to dates or strip dates beforehand
         
-        pred_chain:pd.DataFrame = endingChain.loc[endingChain['[EXPIRE_DATE]'] == nearest_expiry]
-        print('\nPRED_CHAIN\n',pred_chain)
-        
-        # df_expiration_dates = chain.groupby('[EXPIRE_DATE]')
-        # exp_week_chain = df_expiration_dates.get_group(nearest_expiry)
-        # print('exp_week_chain ', exp_week_chain)
-        
-        # nearest_expiry_chain = df_expiration_dates.get_group(' ['+str(nearest_expiry)+']')
-        
+        '''
+        date is the date the prediction is made
+        pred_date is the date on which the prediction makes a prediction
+        '''
 
+        # as of date (present)
+        self.chain = options_utils.get_chain(self.dataset, date) # full option chain as of date
+        self.fut_friday = options_utils.select_friday(date, pred_date) # get future friday immediately after prediction date
+        self.pred_week = options_utils.slice_week(self.chain, self.fut_friday) # get contract chain expiring on future friday, as of date
+        self.pred_week.to_csv('pred_week.csv', index=False, header=True, encoding='utf-8')
 
-
-
-    def getNearestExpirationWeek(self, curDate:str, predictionDate:str) -> str:
-        curDate = np.array(curDate.strip().split('-'), dtype=int)
-        futDate = np.array(predictionDate.strip().split('-'), dtype=int)
-        cur = date(*curDate)
-        fut = date(*futDate)
-
-        #### monday = 0, sunday = 6, friday = 4 ####
+        # as of future friday (truth, future is present)
+        self.chain_on_fut_friday = self.dataset.get_group(self.fut_friday) # full option chain as of future friday (truth in future)
+        self.pred_week_on_fut_friday = options_utils.slice_week(self.chain_on_fut_friday, self.fut_friday)
+        self.pred_week_on_fut_friday.to_csv('pred_week_in_fut.csv', index=False, header=True, encoding='utf-8')
         
-        #TODO: check fut is < last date in datasets (save final dates in memory)
-       
-        while  fut.weekday() != 4:
-            fut += timedelta(1)
-        
-        assert(fut > cur)
-        ret = ' '+fut.strftime('%Y-%m-%d')
-        print('ret ', ret)
-        return ret
+        return self.pred_week
