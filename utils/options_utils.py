@@ -26,13 +26,13 @@ class options_utils:
     @staticmethod
     def get_chain(chain:pd.core.groupby.generic.DataFrameGroupBy, date: str) -> pd.DataFrame:
         ret = chain.get_group(date)
-        print(ret.size, ' chain size')
+        # print(ret.size, ' chain size')
         return ret
     
     @staticmethod
     def slice_week(chain:pd.DataFrame, friday: str):
         filt = chain['[EXPIRE_DATE]'] == friday
         week = chain[filt]
-        print(week.shape, ' week slice shape')
+        # print(week.shape, ' week slice shape')
         return week
     
