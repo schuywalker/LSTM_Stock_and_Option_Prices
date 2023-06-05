@@ -58,11 +58,12 @@ class OPT:
             print(e)
             return None
 
+        
 
         bullish = pred_price > spot
         if bullish:
             if strike_strat == 'ATM':
-                position = self.pred_week[(self.pred_week['[STRIKE]'] >= spot)].iloc[10]
+                position = self.pred_week[(self.pred_week['[STRIKE]'] >= spot)].iloc[0]
             elif strike_strat == 'FIND_BEST_STRIKE':
                 print('hello world call') 
                 # for loop, calc_predicted_PnL, keep saving strike if better, if two in a row are worse (worse is True and this strike is worse) then early stop. 
@@ -70,12 +71,14 @@ class OPT:
             cp = 'C'    
         else:
             if strike_strat == 'ATM':
-                position = self.pred_week[(self.pred_week['[STRIKE]'] <= spot)].iloc[0]
+                position = self.pred_week[(self.pred_week['[STRIKE]'] <= spot)]
+                print(position)
+                position = self.pred_week[(self.pred_week['[STRIKE]'] <= spot)].iloc[-1]
             elif strike_strat == 'FIND_BEST_STRIKE':
                 print('hello world put')
             cp = 'P'
         
-
+        print('spot: ', spot, 'cp', cp, 'strike', position['[STRIKE]'], 'ask', position[f'[{cp}_ASK]'], 'bid', position[f'[{cp}_BID]'])
         future_spot_truth = self.pred_week_on_pred_date['[UNDERLYING_LAST]'].iloc[0]
         
 
@@ -83,43 +86,54 @@ class OPT:
         position_in_future = self.pred_week_on_pred_date[self.pred_week_on_pred_date['[STRIKE]'] == position['[STRIKE]']]
         
         #shares
-        shares_predicted_return = round(((pred_price - spot) / spot)*100,3)
-        predicted_baseline_PnL = shares_predicted_return * 1000
+        shares_predicted_return_percent = round(((pred_price - spot) / spot)*100,3)
+        # shares_predicted_return = round(((pred_price - spot) / spot),3)
+        predicted_baseline_PnL = ((shares_predicted_return_percent/100) * 1000) + 1000
 
         actual_baseline_PnL = ((true_return * 1000) + 1000 ) if bullish else 1000 
         
-        premium_paid = position[f'[{cp}_ASK]']
-        value_at_expiration = position_in_future[f'[{cp}_BID]'].iloc[0]
-        # if type(value_at_expiration) != float:
-        #     # print(position, '\n')
-        #     return None
-        value_at_expiration = float(value_at_expiration)
 
-
-        # single_contract_PL = value_at_expiration - premium_paid
-        qty = risk / premium_paid
-        net_option_exposure_value = (value_at_expiration * qty)
-        actual_option_PnL = net_option_exposure_value + (1000 - risk)
+        #options
+        premium_per_contract = round((position[f'[{cp}_ASK]']*100), 2)
+        value_at_expiration = (position_in_future[f'[{cp}_BID]'].iloc[0])*100
+        print(position, '\n')
         
-        #option
+        try :
+            value_at_expiration = round((float(value_at_expiration)),2)
+        except Exception as e:
+            return None
+            
+
+
+
+        # single_contract_PL = value_at_expiration - premium_per_contract
+        qty = round((risk / premium_per_contract), 5)
+        
+        #actual
+        option_exposure_expiration_value = round((value_at_expiration * qty),2)
+        actual_option_PnL = option_exposure_expiration_value + (1000 - risk)
+
+        # only works for call right now
+        #option prediction 
         strike = position['[STRIKE]']
-        predicted_option_return = round(((pred_price - strike) / strike),2)
-        predicted_option_PnL = (((pred_price - strike) * 100) * qty) + (1000 - risk)
+        predicted_intrinsic_value = (pred_price - strike)*100 # single contract intrinsice value at expiration
+        predicted_option_PnL = ((predicted_intrinsic_value - premium_per_contract) * qty) + (1000 - risk) # - premium_paid
+        predicted_option_return = round((((predicted_option_PnL / 1000)-1)),2) 
         
         
         baseline_percent = round((((actual_baseline_PnL / 1000)-1) * 100), 3)
-        option_percent = round((((actual_option_PnL / 1000)-1) * 100), 3)
+        actual_option_percent = round((((actual_option_PnL / 1000)-1) * 100), 3)
 
         option_outperformance = actual_option_PnL - actual_baseline_PnL
 
         if print_play:
             if verbose:
                 print('Price on date prediction was made: ',spot,'. Actual share price on predicted date: ',future_spot_truth)
-                print(f'Price movement: Actual:{round(true_return*100,2)}% Predicted:{shares_predicted_return}%')
-                print(f'Contact value went from { premium_paid } to { value_at_expiration }') 
-                print(f'Premium paid: {premium_paid}. Qty: {qty}. Net option exposure value: {net_option_exposure_value}. Actual option PnL: {actual_option_PnL}')
+                print(f'Price movement: Actual: {round(true_return*100,2)}% Predicted: {shares_predicted_return_percent}%')
+                print(f'{strike_strat} contract value went from { premium_per_contract } to { value_at_expiration }') 
+                print(f'Premium paid: {risk} ({premium_per_contract} * Qty: {qty}). Option exposure expiration value: {option_exposure_expiration_value}. Actual option PnL: {actual_option_PnL}')
                 
-            print(f'Predicted baseline return: {shares_predicted_return}% P/L:${int(predicted_baseline_PnL)}. Predicted Option return: {predicted_option_return}% P/L: ${int(predicted_option_PnL)}.' ) 
-            print(f'Baseline (shares): {baseline_percent}% P/L:${int(actual_baseline_PnL)}.  Option PnL: {option_percent}% P/L: ${int(actual_option_PnL)}. Result for options:${round(option_outperformance,2)}\n' ) 
+            print(f'Predicted: baseline return: {shares_predicted_return_percent}% P/L:${int(predicted_baseline_PnL)}. Predicted Option return: {predicted_option_return*100}% P/L: ${int(predicted_option_PnL)}.' ) 
+            print(f'Actual: baseline (shares): {baseline_percent}% P/L:${int(actual_baseline_PnL)}.  Option PnL: {actual_option_percent}% P/L: ${int(actual_option_PnL)}. Result for options:${round(option_outperformance,2)}\n' ) 
         
         return (actual_baseline_PnL, actual_option_PnL, option_outperformance, predicted_baseline_PnL,predicted_option_PnL)
