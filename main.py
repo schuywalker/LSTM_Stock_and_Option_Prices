@@ -18,6 +18,8 @@ if __name__ == '__main__':
     predictions.iloc[0]
     results = []
     for i in range(len(predictions)):  
-        print(i)
         pred = predictions.iloc[i]
-        results.append(opt.find_plays(' 2021-03-04',' '+pred['Date'],float(pred['Pred']),'ATM',100,True,True))
+        pred_list = np.array(pred['Date'].split('-'), dtype=int)
+        cur = date(*pred_list)
+        if cur.weekday() == 4:
+            results.append(opt.find_plays(' 2021-03-04',' '+pred['Date'],float(pred['Pred']),'ATM',100,True,False))

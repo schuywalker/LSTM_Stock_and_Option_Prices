@@ -5,7 +5,7 @@ import numpy as np
 
 
 class options_utils:
-
+    
     @staticmethod
     def select_friday(curDate:str, predictionDate:str) -> str:
         curDate = np.array(curDate.strip().split('-'), dtype=int)
