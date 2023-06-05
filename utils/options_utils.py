@@ -33,6 +33,7 @@ class options_utils:
     def slice_week(chain:pd.DataFrame, friday: str):
         filt = chain['[EXPIRE_DATE]'] == friday
         week = chain[filt]
+        # assert(not week.empty)
         # print(week.shape, ' week slice shape')
         return week
     

@@ -30,6 +30,10 @@ class OPT:
         fut_friday = options_utils.select_friday(date, pred_date) # get future friday immediately after prediction date
         self.pred_week = options_utils.slice_week(self.chain, fut_friday) # get contract chain expiring on future friday, as of date
 
+        if self.pred_week.empty:
+            # print (f'pred_week empty (no contracts expiring on {fut_friday})') # skip for now. keep going farther out?
+            return None
+
         # as of future friday (truth. in future)
         self.chain_on_pred_date = self.dataset.get_group(pred_date) # full option chain as of future friday (truth in future)
         self.pred_week_on_pred_date = options_utils.slice_week(self.chain_on_pred_date, fut_friday)
@@ -38,10 +42,11 @@ class OPT:
         # self.pred_week.to_csv('pred_week.csv', index=False, header=True, encoding='utf-8')
         # self.pred_week_on_pred_date.to_csv('pred_week_in_fut.csv', index=False, header=True, encoding='utf-8')
         
-        if pred_price is not None:
-            self.make_play(pred_price, strike_strat, risk, print_play, verbose)
+        if pred_price is None:
+            return None
+        return self.make_play(pred_price, strike_strat, risk, print_play, verbose)
 
-        return self.pred_week
+
     
     def make_play(self, pred_price, strike_strat='ATM',risk=1000, print_play=True,verbose=False):
         assert (risk <= 1000)
@@ -49,7 +54,7 @@ class OPT:
             spot = self.pred_week.iloc[0]['[UNDERLYING_LAST]']
         except Exception as e:
             print(e)
-            return
+            return None
 
 
         bullish = pred_price > spot
@@ -70,9 +75,9 @@ class OPT:
         
         premium_paid = position[f'[{cp}_ASK]']
         value_at_expiration = position_in_future[f'[{cp}_BID]'].iloc[0]
-        if type(value_at_expiration) != float:
-            print(position, '\n')
-            return
+        # if type(value_at_expiration) != float:
+        #     # print(position, '\n')
+        #     return None
         value_at_expiration = float(value_at_expiration)
 
 
