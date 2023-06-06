@@ -48,6 +48,22 @@ class OPT:
 
         return self.make_play(pred_price, strike_strat, risk, print_play, verbose)
 
+    def calc_predicted_option_PnL(self, contract, cp, pred_price, risk, ):
+        premium_per_contract = contract[f'[{cp}_ASK]']
+        qty = risk / premium_per_contract
+
+        #option prediction 
+        strike = contract['[STRIKE]']
+        if cp == 'C':
+            predicted_intrinsic_value = (pred_price - strike)*100
+        elif cp == 'P':
+            predicted_intrinsic_value = (strike - pred_price)*100
+        
+        predicted_option_PnL = ((predicted_intrinsic_value - premium_per_contract) * qty) + (1000 - risk) # - premium_paid
+
+        return predicted_option_PnL
+
+
 
     
     def make_play(self, pred_price, strike_strat='ATM',risk=1000, print_play=True,verbose=False):
@@ -58,30 +74,55 @@ class OPT:
             print(e)
             return None
 
-        
-
         bullish = pred_price > spot
         if bullish:
+            # look at calls
+            cp = 'C'    
             if strike_strat == 'ATM':
                 position = self.pred_week[(self.pred_week['[STRIKE]'] >= spot)].iloc[0]
+
             elif strike_strat == 'FIND_BEST_STRIKE':
-                print('hello world call') 
-                # for loop, calc_predicted_PnL, keep saving strike if better, if two in a row are worse (worse is True and this strike is worse) then early stop. 
-                    
-            cp = 'C'    
+                best = -999
+                otm_calls = self.pred_week[(self.pred_week['[STRIKE]'] >= spot)]
+                position = None
+                # prev_was_worse = False
+                for i in range(len(otm_calls)):
+                    pnl = self.calc_predicted_option_PnL(otm_calls.iloc[i], cp, pred_price, risk)
+                    if pnl > best:
+                        best = pnl
+                        position = otm_calls.iloc[i]
+                    else:
+                        print(self.pred_week[(self.pred_week['[STRIKE]'] <= spot)].iloc[0], 'VS.', position)
+                        break
+
+  
         else:
-            if strike_strat == 'ATM':
+            cp = 'P'
+            # look at puts
+            if strike_strat == 'ATM' :
                 position = self.pred_week[(self.pred_week['[STRIKE]'] <= spot)]
-                print(position)
+                # print(position)
                 position = self.pred_week[(self.pred_week['[STRIKE]'] <= spot)].iloc[-1]
             elif strike_strat == 'FIND_BEST_STRIKE':
-                print('hello world put')
-            cp = 'P'
+                best = -999 
+                otm_puts = self.pred_week[(self.pred_week['[STRIKE]'] <= spot)]
+                position = None
+                # assert(otm_puts.iloc[len(otm_puts)-1] == otm_puts.iloc[-1])
+                # prev_was_worse = False
+                for i in range(len(otm_puts)-1,0,-1):
+                    pnl = self.calc_predicted_option_PnL(otm_puts.iloc[i], cp, pred_price, risk)
+                    if pnl > best:
+                        best = pnl
+                        position = otm_puts.iloc[i]
+                    else:
+                        print(self.pred_week[(self.pred_week['[STRIKE]'] <= spot)].iloc[-1], 'VS.', position)
+                        break
+            
         
-        print('spot: ', spot, 'cp', cp, 'strike', position['[STRIKE]'], 'ask', position[f'[{cp}_ASK]'], 'bid', position[f'[{cp}_BID]'])
+        # print('spot: ', spot, 'cp', cp, 'strike', position['[STRIKE]'], 'ask', position[f'[{cp}_ASK]'], 'bid', position[f'[{cp}_BID]'])
+        
         future_spot_truth = self.pred_week_on_pred_date['[UNDERLYING_LAST]'].iloc[0]
-        
-
+    
         true_return = (future_spot_truth - spot) / spot
         position_in_future = self.pred_week_on_pred_date[self.pred_week_on_pred_date['[STRIKE]'] == position['[STRIKE]']]
         
@@ -96,15 +137,12 @@ class OPT:
         #options
         premium_per_contract = round((position[f'[{cp}_ASK]']*100), 2)
         value_at_expiration = (position_in_future[f'[{cp}_BID]'].iloc[0])*100
-        print(position, '\n')
+        # print(position, '\n')
         
         try :
             value_at_expiration = round((float(value_at_expiration)),2)
         except Exception as e:
             return None
-            
-
-
 
         # single_contract_PL = value_at_expiration - premium_per_contract
         qty = round((risk / premium_per_contract), 5)

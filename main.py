@@ -22,4 +22,4 @@ if __name__ == '__main__':
         pred_list = np.array(pred['Date'].split('-'), dtype=int)
         cur = date(*pred_list)
         if cur.weekday() == 4:
-            results.append(opt.find_plays(' 2021-03-04',' '+pred['Date'],float(pred['Pred']),'ATM',100,True,True))
+            results.append(opt.find_plays(' 2021-03-04',' '+pred['Date'],float(pred['Pred']),'FIND_BEST_STRIKE',1000,True,True))

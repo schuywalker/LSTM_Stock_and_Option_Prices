@@ -30,7 +30,11 @@ Index(['[QUOTE_UNIXTIME]', ' [QUOTE_READTIME]', ' [QUOTE_DATE]',
        ' [P_VEGA]', ' [P_THETA]', ' [P_RHO]', ' [P_IV]', ' [P_VOLUME]',
        ' [STRIKE_DISTANCE]', ' [STRIKE_DISTANCE_PCT]'],
 '''
-        
 
+if __name__ == '__main__':
+    dsb = DatasetBuilder('tsla_2019_2022.csv', 'tslaReduced.csv',' [QUOTE_DATE]',' [UNDERLYING_LAST]', ' [EXPIRE_DATE]',
+        ' [DTE]', ' [C_LAST]',
+            ' [C_BID]', ' [C_ASK]', ' [STRIKE]', ' [P_BID]',
+        ' [P_ASK]', ' [P_LAST]',)
 
         
