@@ -13,11 +13,11 @@ class DatasetBuilder():
             newDataFrame[column] = srcDataFrame[column]
         newDataFrame.to_csv(destName, index=False, header=True, encoding='utf-8')
     
-if __name__ == '__main__':
-    dsb = DatasetBuilder('tsla_2019_2022.csv', 'tslaReduced.csv',' [QUOTE_DATE]',' [UNDERLYING_LAST]', ' [EXPIRE_DATE]',
-       ' [DTE]', ' [C_LAST]',
-        ' [C_BID]', ' [C_ASK]', ' [STRIKE]', ' [P_BID]',
-       ' [P_ASK]', ' [P_LAST]',)
+# if __name__ == '__main__':
+#     dsb = DatasetBuilder('tsla_2019_2022.csv', 'tslaReduced.csv',' [QUOTE_DATE]',' [UNDERLYING_LAST]', ' [EXPIRE_DATE]',
+#        ' [DTE]', ' [C_LAST]',
+#         ' [C_BID]', ' [C_ASK]', ' [STRIKE]', ' [P_BID]',
+#        ' [P_ASK]', ' [P_LAST]',)
         
 '''
 headers in kaggle tsla_2019_2022.csv. have to add single quotes like 'col' or usually ' col'
@@ -32,7 +32,7 @@ Index(['[QUOTE_UNIXTIME]', ' [QUOTE_READTIME]', ' [QUOTE_DATE]',
 '''
 
 if __name__ == '__main__':
-    dsb = DatasetBuilder('tsla_2019_2022.csv', 'tslaReduced.csv',' [QUOTE_DATE]',' [UNDERLYING_LAST]', ' [EXPIRE_DATE]',
+    dsb = DatasetBuilder('./apple/21savage.txt', 'AAPL_chains_reduced_21_22Jan.csv',' [QUOTE_DATE]',' [UNDERLYING_LAST]', ' [EXPIRE_DATE]',
         ' [DTE]', ' [C_LAST]',
             ' [C_BID]', ' [C_ASK]', ' [STRIKE]', ' [P_BID]',
         ' [P_ASK]', ' [P_LAST]',)
