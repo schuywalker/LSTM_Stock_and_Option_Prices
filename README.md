@@ -18,17 +18,17 @@ Result of our price predictions are below in orange, with the actual price in bl
 
 # Part 2: Leveraging Predictions With Options
 
-Risk
+# 2.1 Risk
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk100.png)
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk500.png)
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk1000.png)
 
-Choose Higher
+# 2.1 Choose Higher
 Because of the extremely bullish nature of the time period, not only were put options never selected, but call options were never predicted to outperform. We can see two instances in the AAPL plot where the opportunity was present, but the algorithm was not able to pick up on it.
 ![Screenshot](screenshots/Option_Play_Analysis/Choose_Higher/AAPL_ATM_1000.png)
 ![Screenshot](screenshots/Option_Play_Analysis/Choose_Higher/TSLA_ATM_1000.png)
 
-Find_Best_Strike vs ATM:
+# 2.3 Find_Best_Strike vs ATM:
 These plots are a work in progress, but the idea of 'FIND_BEST_STRIKE' is that OPT will iterate through all the OTM calls/puts and save the one with the intrinsic value at expiration given the predicted price.
 We can do this for expiration days without introducing extra uncertaintity because the intrinsic value at expiration is a function of price, and extrinsic value at expiration is 0.
 
