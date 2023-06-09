@@ -97,7 +97,7 @@ class OPT:
                 otm_calls = self.pred_week[filt]
                 for i in range(len(otm_calls)):
                     pnl = self.calc_predicted_option_PnL(otm_calls.iloc[i], cp, pred_price, risk)
-                    print(f'ran calc predicted optino PnL {i}')
+                    # print(f'ran calc predicted option PnL {i}')
                     if pnl > best:
                         best = pnl
                         position = otm_calls.iloc[i]
