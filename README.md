@@ -37,7 +37,7 @@ This method is wildly insufficient and doesn't capitalize on gamma at all. An OT
 ![Screenshot](screenshots/Option_Play_Analysis/find_best_strike/AAPL_FBS_100.png)
 ![Screenshot](screenshots/Option_Play_Analysis/find_best_strike/TSLA_FBS_1000.png)
 
-There are so, so directions to take this project, but one big improvement I'd like to add is the ability to make multiple trades within a time frame, reassessing at each point in time by rerunning the predictions with the new data.
+There are so, so many directions to take this project, but one big improvement I'd like to add is the ability to make multiple trades within a time frame, reassessing at each point in time by rerunning the predictions with the new data.
 
 This is the tip of the iceberg in terms of leveraging price predictions with options, and I'm sure that with more work we'll find reliable strategies. The fact that it hasn't been easier to use the buy-side of the volatility market to increase returns has, however, reignited my interest in and bias toward the sell-side. If more work doesn't begin to yield results in favor of utilizing options then I'll switch my focus back to short-vol, theta based strategies.
 
