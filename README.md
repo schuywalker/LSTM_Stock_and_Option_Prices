@@ -18,12 +18,14 @@ We attempted to predict price using only price history. The results seem too goo
 
 # 2.1 Risk
 The idea of using options to leverage predictions is primarily to allow for greater control over risk. Using price for predictions, while well precidented by technical analysis, has a fundamentally arbitrary nature. Fine tuned control over risk is vital to finding optimized utilization of any kind of price prediction.
+
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk100.png)
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk500.png)
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk1000.png)
 
 # 2.1 Choose Higher
 Because of the extremely bullish nature of the time period, not only were put options never selected, but call options were never predicted to outperform. We can see two instances in the AAPL plot where the opportunity was present, but the algorithm was not able to pick up on it.
+
 ![Screenshot](screenshots/Option_Play_Analysis/Choose_Higher/AAPL_ATM_1000.png)
 ![Screenshot](screenshots/Option_Play_Analysis/Choose_Higher/TSLA_ATM_1000.png)
 
