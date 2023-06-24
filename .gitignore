@@ -1,6 +1,6 @@
-*.csv
+ignore_all/*
 *.txt
-*.zip
+datasets/optionsDX/*.csv
 *.7z
 *.DS_Store
 # Byte-compiled / optimized / DLL files
