@@ -2,8 +2,6 @@
 
 Authors: Schuyler Asplin, Vlad Shingarey, Parker Groop
 
-this readme is a work in progress!!
-
 This project is broken into 2 main parts:
 
 1. Using Long Short Term Memory to attempt stock price prediction
@@ -11,7 +9,7 @@ This project is broken into 2 main parts:
 
 # Part 1: Predicting Price
 
-Result of our price predictions are below in orange, with the actual price in blue:
+We attempted to predict price using only price history. The results seem too good to be true, so I'm currently working to verify that the prediction never benefit from information it shouldn't have access to. The result of our price predictions are below in orange, with the actual price in blue:
 
 ![Screenshot](screenshots/LSTM_outputs/AAPL_price_prediction.png)
 ![Screenshot](screenshots/LSTM_outputs/AAPL_error_over_time.png)
@@ -19,6 +17,7 @@ Result of our price predictions are below in orange, with the actual price in bl
 # Part 2: Leveraging Predictions With Options
 
 # 2.1 Risk
+The idea of using options to leverage predictions is primarily to allow for greater control over risk. Using price for predictions, while well precidented by technical analysis, has a fundamentally arbitrary nature. Fine tuned control over risk is vital to finding optimized utilization of any kind of price prediction.
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk100.png)
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk500.png)
 ![Screenshot](screenshots/Option_Play_Analysis/ATM_by_risk/AAPL_risk1000.png)
@@ -41,4 +40,4 @@ There are so, so many directions to take this project, but one big improvement I
 
 This is the tip of the iceberg in terms of leveraging price predictions with options, and I'm sure that with more work we'll find reliable strategies. The fact that it hasn't been easier to use the buy-side of the volatility market to increase returns has, however, reignited my interest in and bias toward the sell-side. If more work doesn't begin to yield results in favor of utilizing options then I'll switch my focus back to short-vol, theta based strategies.
 
--Schuyler Asplin, 6/9/23
+-Schuyler Asplin
