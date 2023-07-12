@@ -1,7 +1,5 @@
 # Leveraging LSTM Stock Price Predictions With Options
 
-Authors: Schuyler Asplin, Vlad Shingarey, Parker Groop
-
 This project is broken into 2 main parts:
 
 1. Using Long Short Term Memory to attempt stock price prediction
@@ -9,10 +7,7 @@ This project is broken into 2 main parts:
 
 # Part 1: Predicting Price
 
-We attempted to predict price using only price history. The results seem too good to be true, so I'm currently working to verify that the prediction never benefit from information it shouldn't have access to. The result of our price predictions are below in orange, with the actual price in blue:
-
-![Screenshot](screenshots/LSTM_outputs/AAPL_price_prediction.png)
-![Screenshot](screenshots/LSTM_outputs/AAPL_error_over_time.png)
+Our price predictions were done in a flawed manner that allowed the predictions to use data it shouldn't have access to. The goal of leveraging price predictions with options is interesting whether or not the inputs are valid, so I've removed the price prediction screenshots and kept Part 2 of the project.
 
 # Part 2: Leveraging Predictions With Options
 
