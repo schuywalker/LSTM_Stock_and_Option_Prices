@@ -1,5 +1,5 @@
 import pandas as pd
-from OptionPlayTranslator import *
+from LeveragingPredictions.OptionPlayTranslator import *
 
 
 
