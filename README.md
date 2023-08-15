@@ -7,7 +7,11 @@ This project is broken into 2 main parts:
 
 # Part 1: Predicting Price
 
-Our price predictions were done in a flawed manner that allowed the predictions to use data it shouldn't have access to. The goal of leveraging price predictions with options is interesting whether or not the inputs are valid, so I've removed the price prediction screenshots and kept Part 2 of the project.
+The first attempt I made at price prediction as part of the group project allowed model to overfit to a single dataset. 
+My current attempts involve taking price action from multiple tickers over a 'window' of time, and training a single model on price action that is agnostic of ticker. I also hope to keep iterations low enough and sample
+size high enough to minimize overfitting to the training data. 
+Currently features are daily opening price, daily closing price, and volume. I look forward to adding more features in the future and seeing how they affect the accuracy of the model.
+The result should be something akin to 'the model learning technical analysis.' My prediction is that an accuracy rate of 51-55% is possible. I would be suspicious of anything too much higher than that. Luckily, such an accuracy rate is all we need for the prediction generation to be highly actionable.
 
 # Part 2: Leveraging Predictions With Options
 
