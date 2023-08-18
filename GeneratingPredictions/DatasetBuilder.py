@@ -8,7 +8,8 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 
 
-tickersForTesting = ['SPY', 'AAPL', 'SNAP', 'TSLA']
+tickersForTesting = ['SPY', 'AAPL']
+# tickersForTesting = ['SPY', 'AAPL', 'SNAP', 'TSLA']
 class DatasetBuilder:
 
     def __init__(self, tickers=tickersForTesting):
@@ -27,14 +28,14 @@ class DatasetBuilder:
 
             # TODO: if splits, separate into 2 different dfs. no samples should overlap a split.
 
-        print(len(dfs[0]))
+        # print(len(dfs[0]))
 
         # normalize data 0-1
         sc_price = MinMaxScaler()
         sc_volume = MinMaxScaler()
         for df in dfs:
             df[['open', 'close']] = sc_price.fit_transform(df[['open','close']])
-            df[['volume']] = sc_price.fit_transform(df[['volume']])
+            df[['volume']] = sc_volume.fit_transform(df[['volume']])
         # https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html
         # use inverse_transform to interpret predictions later
 
@@ -56,8 +57,8 @@ class DatasetBuilder:
         # split 30 into X (training samples) and 10 into Y (validation) for each window
         X = np.array([arr[ : trainDays] for arr in windowsValues]) # vstack concatenates along first axis, turning (N,) into (1,N)
         Y = np.array([arr[trainDays : ] for arr in windowsValues])
-        print(X.shape)
-        print(Y.shape)
+        print('X.shape: ',X.shape)
+        print('Y.shape: ',Y.shape)
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
