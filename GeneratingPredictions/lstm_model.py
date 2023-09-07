@@ -58,7 +58,7 @@ class LSTM(nn.Module):
         print('\n forecast out shape:\n',forecast_out.shape)
         forecast3D = forecast_out.view(x.size(0),10,3)
         print('forecast3D.shape ',forecast3D.shape)
-        print('forecast3D[0] ',forecast3D[0])
+        # print('forecast3D[0] ',forecast3D[0])
         return forecast3D
         # return forecast.view(x.size(0), 10, 3)
          
@@ -112,24 +112,24 @@ class LSTM(nn.Module):
                 total_loss += loss.item()
 
                 # correct_direction = ((predicted > 0) & (target > 0)) | ((predicted < 0) & (target < 0))
-                threshold = 0.5
-                correst_within_threshold = (predicted - target).abs() < threshold
+                threshold = 0.1
 
-
-                _, predicted = outputs.max(1) # _ is actual max values, but predicted is the indicies (predicted class labels). not interested in max values.
-                print('target: ',target)
+                # _, predicted = outputs.max(1) # _ is actual max values, but predicted is the indicies (predicted class labels). not interested in max values.
+                # correct_within_threshold = (predicted - target).abs() < threshold
+                
+                correct_within_threshold = (outputs - target).abs() < threshold
+                # print('target: ',target)
                 # correct_by_direction_total += correct_direction.float().sum().item()
-                correct_by_threshold_total += correst_within_threshold.float().sum().item()
-                correct += predicted.eq(target).sum().item() # have to track direction and develop correctness threshold... 
+                correct_by_threshold_total += correct_within_threshold.float().sum().item()
+                correct += outputs.eq(target).sum().item() # have to track direction and develop correctness threshold... 
                 # correct direction, 
                 # correct threshold (normalize by magnitude of move??)
-                # is normalization necessary. 
-                mse_loss_list.append((predicted - target).pow(2).mean().item())
+                mse_loss_list.append((outputs - target).pow(2).mean().item())
 
 
         average_loss = total_loss / len(test_loader)
         accuracy = 100 * correct / len(test_loader.dataset)
 
-        return average_loss, accuracy,mse_loss_list
+        return average_loss, accuracy, mse_loss_list
 
     

@@ -30,6 +30,9 @@ class DatasetBuilder:
 
         # print(len(dfs[0]))
 
+
+######## EXTRACT NORMALIZE SO CAN INVERSE NORMALIZE LATER
+
         # normalize data 0-1
         sc_price = MinMaxScaler()
         sc_volume = MinMaxScaler()

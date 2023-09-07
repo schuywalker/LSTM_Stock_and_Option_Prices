@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
@@ -49,12 +50,15 @@ def main():
 
     
     num_epochs = 10
+    avg_losses = []
     
     for epoch in range(num_epochs):
         train_loss = model.train_model(model, train_loader, criterion, optimizer)
-        test_loss, test_accuracy = model.evaluate(model, test_loader, criterion)
-        print(f"Epoch: {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.2f}%")
+        avg_test_loss, test_accuracy, mse_loss_list = model.evaluate(model, test_loader, criterion)
+        avg_losses.append(avg_test_loss)
+        print(f"\nEpoch: {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Test Loss: {avg_test_loss:.4f}, Test Accuracy: {test_accuracy:.2f}%")
 
+    print("\navg loss over epochs: ",((sum(avg_losses)/len(avg_losses))))
 
 
 if __name__ == '__main__':
