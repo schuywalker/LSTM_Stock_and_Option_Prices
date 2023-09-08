@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
+from DataHandlers import Normalizer
 
 
 tickersForTesting = ['SPY', 'AAPL']
@@ -15,7 +16,7 @@ class DatasetBuilder:
     def __init__(self, tickers=tickersForTesting):
         self.tickers = tickers
 
-    def buildDataset(self, totalDays=40, trainDays=30):
+    def buildDataset(self, normalizer: Normalizer ,totalDays=40, trainDays=30):
         dfs = []
         for ticker in self.tickers:
             priceHistory = yahooquery.Ticker(ticker, asnychronous=True)
@@ -30,15 +31,9 @@ class DatasetBuilder:
 
         # print(len(dfs[0]))
 
-
-######## EXTRACT NORMALIZE SO CAN INVERSE NORMALIZE LATER
-
         # normalize data 0-1
-        sc_price = MinMaxScaler()
-        sc_volume = MinMaxScaler()
-        for df in dfs:
-            df[['open', 'close']] = sc_price.fit_transform(df[['open','close']])
-            df[['volume']] = sc_volume.fit_transform(df[['volume']])
+        dfs = normalizer.normalize(dfs)
+        
         # https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MinMaxScaler.html
         # use inverse_transform to interpret predictions later
 
@@ -77,3 +72,5 @@ class DatasetBuilder:
         test_loader = DataLoader(test_data, batch_size=5, shuffle=False) # doesn't change model so don't need to shuffle.   
 
         return train_loader,test_loader
+    
+    

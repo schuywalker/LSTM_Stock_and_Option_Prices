@@ -48,16 +48,16 @@ class LSTM(nn.Module):
         # sequence of BATCHES not relevant, so we init to zeros every time.
         
         h_0, c_0 = self.init_hidden(x.size(0), x.device) # x.size(1) is batch size
-        print ('x.shape:', x.shape, 'h_0.shape:', h_0.shape, 'c_0.shape:', c_0.shape)
+        # print ('x.shape:', x.shape, 'h_0.shape:', h_0.shape, 'c_0.shape:', c_0.shape)
         lstm_out, (hn, cn) = self.lstm(x, (h_0, c_0))
-        print ('lstm_out.shape ',lstm_out.shape, 'hn.shape ',hn.shape, 'cn.shape ',cn.shape)
+        # print ('lstm_out.shape ',lstm_out.shape, 'hn.shape ',hn.shape, 'cn.shape ',cn.shape)
         
         last_hidden_state = hn[-1]
-        print('hn shape', hn.shape, 'hn[-1].shape ', hn[-1].shape)
+        # print('hn shape', hn.shape, 'hn[-1].shape ', hn[-1].shape)
         forecast_out = self.forecast(last_hidden_state)
-        print('\n forecast out shape:\n',forecast_out.shape)
+        # print('\n forecast out shape:\n',forecast_out.shape)
         forecast3D = forecast_out.view(x.size(0),10,3)
-        print('forecast3D.shape ',forecast3D.shape)
+        # print('forecast3D.shape ',forecast3D.shape)
         # print('forecast3D[0] ',forecast3D[0])
         return forecast3D
         # return forecast.view(x.size(0), 10, 3)
@@ -76,11 +76,11 @@ class LSTM(nn.Module):
         for batch_idx, (data, target) in enumerate(train_loader):
  
             data, target = data.to(self.device), target.to(self.device)
-            print('data.shape ',data.shape, ' target.shape: ', target.shape)
+            # print('data.shape ',data.shape, ' target.shape: ', target.shape)
 
             optimizer.zero_grad()  # gradients reset after every forward pass
             outputs = model(data)  # essentially calls forward. outputs.shape is 30,1 currently
-            print('outputs.shape: ',outputs.shape,' target.shape: ',target.shape,'\n\n')
+            # print('outputs.shape: ',outputs.shape,' target.shape: ',target.shape,'\n\n')
             loss = criterion(outputs, target)  
             loss.backward()  # backward pass
             optimizer.step()  # update the model parameters
@@ -109,14 +109,13 @@ class LSTM(nn.Module):
 
                 outputs = model(data)  # forward pass
                 loss = criterion(outputs, target)
+                
                 total_loss += loss.item()
-
                 # correct_direction = ((predicted > 0) & (target > 0)) | ((predicted < 0) & (target < 0))
                 threshold = 0.1
 
                 # _, predicted = outputs.max(1) # _ is actual max values, but predicted is the indicies (predicted class labels). not interested in max values.
                 # correct_within_threshold = (predicted - target).abs() < threshold
-                
                 correct_within_threshold = (outputs - target).abs() < threshold
                 # print('target: ',target)
                 # correct_by_direction_total += correct_direction.float().sum().item()
@@ -130,6 +129,6 @@ class LSTM(nn.Module):
         average_loss = total_loss / len(test_loader)
         accuracy = 100 * correct / len(test_loader.dataset)
 
-        return average_loss, accuracy, mse_loss_list
+        return data, outputs, target, average_loss, accuracy, mse_loss_list
 
     
