@@ -21,17 +21,17 @@ def main():
     sc_volume = MinMaxScaler()
     normalizer = Normalizer(sc_price, sc_volume)
 
-    use_saved_data = False
+    use_saved_data = True
     if (use_saved_data):
         train_loader = torch.load('train_loader.pth')
         test_loader = torch.load('test_loader.pth')
-        with open('GeneratingPredictions/Models/sc_price_params.pkl', 'rb') as f:
+        with open('GeneratingPredictions/out/sc_price_params.pkl', 'rb') as f:
             sc_price_params = pickle.load(f)
             # normalizer.sc_price.set_params(**sc_price_params)
             for attribute, value in sc_price_params.items():
                 setattr(normalizer.sc_price, attribute, value)
 
-        with open('GeneratingPredictions/Models/sc_volume_params.pkl', 'rb') as f:
+        with open('GeneratingPredictions/out/sc_volume_params.pkl', 'rb') as f:
             sc_volume_params = pickle.load(f)
             # normalizer.sc_volume.set_params(**sc_volume_params)    
             for attribute, value in sc_volume_params.items():
@@ -39,8 +39,8 @@ def main():
     else:    
         datasetBuilder = DatasetBuilder()
         train_loader,test_loader = datasetBuilder.buildDataset(normalizer, window_length, seq_length)
-        torch.save(train_loader, 'train_loader.pth')
-        torch.save(test_loader, 'test_loader.pth')
+        torch.save(train_loader, 'GeneratingPredictions/out/train_loader.pth')
+        torch.save(test_loader, 'GeneratingPredictions/out/test_loader.pth')
 
     print("Is price scaler fitted?", hasattr(normalizer.sc_price, 'scale_') and hasattr(normalizer.sc_price, 'data_min_'))
     print("Is volume scaler fitted?", hasattr(normalizer.sc_volume, 'scale_') and hasattr(normalizer.sc_volume, 'data_min_'))
@@ -68,7 +68,7 @@ def main():
 
 
     
-    num_epochs = 10
+    num_epochs = 20
     avg_losses = []
 
     combined_dfs = []
@@ -83,15 +83,15 @@ def main():
         denormGroundTruth = normalizer.inverseNormalizeBatches(ground_truth)
         for i in range(len(denormInputData)):
             combined_df = pd.concat([denormInputData[i], denormGroundTruth[i], denormPred[i]], axis=0)
-            print(combined_df)
+            # print(combined_df)
             combined_dfs.append(combined_df)   
 
     final_df = pd.concat(combined_dfs)
-    final_df.to_csv('GeneratingPredictions/Models/results.csv', index=False)
+    final_df.to_csv('GeneratingPredictions/out/results.csv', index=False)
 
 
         # for i in range(denormPred.shape[0]):
-        #     print("pred: ",denormPred[i], "\t\t", "ground truth: ",denormGroundTruth[i])
+        # print("pred: ",denormPred[i], "\t\t", "ground truth: ",denormGroundTruth[i])
         
         
         

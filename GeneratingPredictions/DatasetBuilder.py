@@ -9,8 +9,8 @@ from torch.utils.data import TensorDataset, DataLoader
 from DataHandlers import Normalizer
 
 
-tickersForTesting = ['SPY', 'AAPL']
-# tickersForTesting = ['SPY', 'AAPL', 'SNAP', 'TSLA']
+# tickersForTesting = ['SPY', 'AAPL']
+tickersForTesting = ['SPY', 'AAPL', 'SNAP', 'TSLA']
 class DatasetBuilder:
 
     def __init__(self, tickers=tickersForTesting):

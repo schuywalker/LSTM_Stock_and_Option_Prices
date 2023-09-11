@@ -20,7 +20,7 @@ class Normalizer:
         base_dir = os.getcwd()
         print(base_dir)
         
-        data_models_path = os.path.join(base_dir, 'GeneratingPredictions/Models')
+        data_models_path = os.path.join(base_dir, 'GeneratingPredictions/out')
         print(data_models_path, "\n\n")
 
         sc_price_params_path = os.path.join(data_models_path, 'sc_price_params.pkl')
@@ -31,14 +31,16 @@ class Normalizer:
             pickle.dump({
                 'data_min_': self.sc_price.data_min_,
                 'data_max_': self.sc_price.data_max_,
-                'scale_': self.sc_price.scale_
+                'scale_': self.sc_price.scale_,
+                'min_': self.sc_price.min_,
             }, f)
 
         with open(sc_volume_params_path, 'wb') as f:
             pickle.dump({
                 'data_min_': self.sc_price.data_min_,
                 'data_max_': self.sc_price.data_max_,
-                'scale_': self.sc_price.scale_
+                'scale_': self.sc_price.scale_,
+                'min_': self.sc_price.min_,
             }, f)
         return dfs
     
