@@ -17,14 +17,13 @@ def main():
     window_length = 40 # totalDays
     seq_length = 30 # trainDays
 
-    sc_price = MinMaxScaler()
-    sc_volume = MinMaxScaler()
-    normalizer = Normalizer(sc_price, sc_volume)
+    
+    normalizer = Normalizer()
 
-    use_saved_data = True
+    use_saved_data = False
     if (use_saved_data):
-        train_loader = torch.load('train_loader.pth')
-        test_loader = torch.load('test_loader.pth')
+        train_loader = torch.load('GeneratingPredictions/out/train_loader.pth')
+        test_loader = torch.load('GeneratingPredictions/out/test_loader.pth')
         with open('GeneratingPredictions/out/sc_price_params.pkl', 'rb') as f:
             sc_price_params = pickle.load(f)
             # normalizer.sc_price.set_params(**sc_price_params)
@@ -42,7 +41,7 @@ def main():
         torch.save(train_loader, 'GeneratingPredictions/out/train_loader.pth')
         torch.save(test_loader, 'GeneratingPredictions/out/test_loader.pth')
 
-    print("Is price scaler fitted?", hasattr(normalizer.sc_price, 'scale_') and hasattr(normalizer.sc_price, 'data_min_'))
+    print("Is price scaler fitted?", hasattr(normalizer.sc_open, 'scale_') and hasattr(normalizer.sc_open, 'data_min_'))
     print("Is volume scaler fitted?", hasattr(normalizer.sc_volume, 'scale_') and hasattr(normalizer.sc_volume, 'data_min_'))
 
     num_epochs = 1
@@ -78,9 +77,9 @@ def main():
         input_data, raw_predictions, ground_truth, avg_test_loss, test_accuracy, mse_loss_list = model.evaluate(model, test_loader, criterion)
         avg_losses.append(avg_test_loss)
         print(f"\nEpoch: {epoch+1}/{num_epochs}, Train Loss: {train_loss:.4f}, Test Loss: {avg_test_loss:.4f}, Test Accuracy: {test_accuracy:.2f}%")
-        denormInputData = normalizer.inverseNormalizeBatches(input_data)
-        denormPred = normalizer.inverseNormalizeBatches(raw_predictions)
-        denormGroundTruth = normalizer.inverseNormalizeBatches(ground_truth)
+        denormInputData = normalizer.inverseNormalizeAllFeatures(input_data)
+        denormPred = normalizer.inverseNormalizeOutput(raw_predictions)
+        denormGroundTruth = normalizer.inverseNormalizeOutput(ground_truth)
         for i in range(len(denormInputData)):
             combined_df = pd.concat([denormInputData[i], denormGroundTruth[i], denormPred[i]], axis=0)
             # print(combined_df)

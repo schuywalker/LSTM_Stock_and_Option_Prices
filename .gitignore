@@ -1,3 +1,8 @@
+*.pkl
+*.pth
+*.csv
+out/
+
 ignore_all/*
 *.txt
 datasets/optionsDX/*.csv

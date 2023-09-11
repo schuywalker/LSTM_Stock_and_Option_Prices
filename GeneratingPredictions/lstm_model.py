@@ -33,7 +33,7 @@ class LSTM(nn.Module):
         self.forecast = nn.Sequential(
             nn.Linear(hidden_size, self.intermediate_layers),
             nn.ReLU(),
-            nn.Linear(self.intermediate_layers, 10 * 3)  # 10 days of forecasts, 3 features each
+            nn.Linear(self.intermediate_layers, 10 * 1)  # 10 days of forecasts, 1 output feature
         )
 
         self.fc = nn.Linear(hidden_size, input_size)
@@ -56,7 +56,7 @@ class LSTM(nn.Module):
         # print('hn shape', hn.shape, 'hn[-1].shape ', hn[-1].shape)
         forecast_out = self.forecast(last_hidden_state)
         # print('\n forecast out shape:\n',forecast_out.shape)
-        forecast3D = forecast_out.view(x.size(0),10,3)
+        forecast3D = forecast_out.view(x.size(0),10,1)
         # print('forecast3D.shape ',forecast3D.shape)
         # print('forecast3D[0] ',forecast3D[0])
         return forecast3D
@@ -85,7 +85,7 @@ class LSTM(nn.Module):
             loss.backward()  # backward pass
             optimizer.step()  # update the model parameters
 
-            total_loss += loss.item()
+            total_loss += loss.item() 
 
         average_loss = total_loss / len(train_loader)
         return average_loss

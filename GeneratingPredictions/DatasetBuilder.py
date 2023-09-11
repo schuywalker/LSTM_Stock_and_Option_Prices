@@ -61,9 +61,9 @@ class DatasetBuilder:
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
         trainX_tensor = torch.Tensor(X_train)
-        trainY_tensor = torch.Tensor(Y_train)
+        trainY_tensor = torch.Tensor(Y_train[:,:,1:2]) # only predict closing price, 1:2 ensures still 3 dimensional tensor
         testX_tensor = torch.Tensor(X_test)
-        testY_tensor = torch.Tensor(Y_test)
+        testY_tensor = torch.Tensor(Y_test[:,:,1:2])
 
         train_data = TensorDataset(trainX_tensor, trainY_tensor)
         test_data = TensorDataset(testX_tensor, testY_tensor)
